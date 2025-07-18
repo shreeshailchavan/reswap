@@ -1,7 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import pool from "../../config/db.js";
-import { email } from "zod";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -17,7 +16,7 @@ export const registerUser = async (req, res) => {
 
   try {
     const userCheck = await pool.query(
-      'SELECT id FROM "user" WHERE email = $1 OR username = $2',
+      'SELECT id FROM users WHERE email = $1 OR username = $2',
       [email, username]
     );
 
@@ -28,7 +27,7 @@ export const registerUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const insertResult = await pool.query(
-      'INSERT INTO "user" (username, email, password) VALUES($1, $2, $3) RETURNING id, username, email',
+      'INSERT INTO users (username, email, password) VALUES($1, $2, $3) RETURNING id, username, email',
       [username, email, hashedPassword]
     );
 
@@ -49,7 +48,7 @@ export const loginUser = async (req, res) => {
 
   try {
     const userCheck = await pool.query(
-      'SELECT * FROM "user" WHERE email = $1',
+      'SELECT * FROM users WHERE email = $1',
       [email]
     );
 
